@@ -1,0 +1,1 @@
+INSERT INTO burgers (name) VALUES ('Bacon burger'), ('Bonzai burger'),('Chew burger');
