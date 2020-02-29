@@ -8,20 +8,25 @@ var burger = require("../models/burger.js");
 // Create all our routes and set up logic within those routes where required.
 router.get("/", function(req, res) {
   burger.all(function(data) {
-    var hbsObject = {
-      cats: data
-    };
-    console.log(hbsObject);
-    res.render("index", hbsObject);
+    var burgerList = { burgers: data };
+    console.log("Index Select All", burgerList);
+    return res.render("index", burgerList);
   });
-
-  burger.all()
 });
+
+router.post("/", function(req, res) {
+    burger.create("name", req.body.name, (result) => {
+        // Send back the ID of the new quote
+        console.log(result)
+        return res.redirect('/');
+      });
+  });
 
 router.post("/api/burger", function(req, res) {
   burger.create("name", req.body.name, (result) => {
     // Send back the ID of the new quote
-    res.json({ id: result.insertId });
+    console.log(result)
+    return res.json({ id: result.insertId });
   });
 });
 
@@ -30,15 +35,10 @@ router.put("/api/burger/:id", function(req, res) {
 
   console.log("condition", condition);
 
-  burger.update({
-    devoured: req.body.devoured
-  }, condition, function(result) {
-    if (result.changedRows == 0) {
-      // If no rows were changed, then the ID must not exist, so 404
-      return res.status(404).end();
-    } else {
-      res.status(200).end();
-    }
+  burger.update({ devoured: req.body.devoured }, condition, (result) => {
+    if (result.changedRows == 0) return res.status(404).end();
+    else res.status(200).end();
+    // If no rows were changed, then the ID must not exist, so 404
   });
 });
 
